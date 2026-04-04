@@ -16,8 +16,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../dist')));
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', db: dbConnected, time: new Date().toISOString() });
+});
 
 // MongoDB Connection (non-fatal - app works without it)
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -193,7 +195,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Catch-all: serve React app
+// Serve static files from React build (AFTER API routes)
+app.use(express.static(path.join(__dirname, '../dist')));
+
+// Catch-all: serve React app for client-side routing
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
