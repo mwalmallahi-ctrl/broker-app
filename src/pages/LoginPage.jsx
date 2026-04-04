@@ -11,26 +11,52 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleAction = (e) => {
+  const handleAction = async (e) => {
     e.preventDefault();
     if (mode === 'login') {
-      const displayName = email.split('@')[0];
-      setName(displayName.charAt(0).toUpperCase() + displayName.slice(1));
-      
-      // Admin check for prototype
-      if (email === 'admin@broker.com') {
-        setRole('Main Editor');
-      } else {
-        setRole('Broker');
+      try {
+        const response = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('brokerToken', data.token);
+          setAuth(true);
+          setRole(data.user.role);
+          setName(data.user.username);
+          navigate('/dashboard');
+        } else {
+          alert('Login failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        alert('Could not connect to server.');
       }
-      
-      setAuth(true);
-      navigate('/dashboard');
     } else if (mode === 'register') {
-      setName(username);
-      setRole('Broker');
-      setAuth(true);
-      navigate('/dashboard');
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, email, password })
+        });
+        const data = await response.json();
+        
+        if (response.ok) {
+          localStorage.setItem('brokerToken', data.token);
+          setAuth(true);
+          setRole(data.user.role);
+          setName(data.user.username);
+          navigate('/dashboard');
+        } else {
+          alert('Registration failed: ' + (data.error || 'Unknown error'));
+        }
+      } catch (err) {
+        console.error('Registration error:', err);
+        alert('Could not connect to server.');
+      }
     } else {
       alert(lang === 'en' ? 'A password reset link has been sent to ' + email : 'تم إرسال رابط استعادة كلمة المرور إلى ' + email);
       setMode('login');

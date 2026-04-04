@@ -17,27 +17,24 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
   const [shareEmail, setShareEmail] = useState('');
   
   // Real Local State for Properties
-  const [properties, setProperties] = useState([
-    {
-      id: 1,
-      name: 'Skyline Residences',
-      type: 'Luxury Residential',
-      use: 'Residential',
-      purpose: 'Rent',
-      price: '120,000',
-      area: '1,450',
-      location: 'Dubai Marina, UAE',
-      unitType: '2BHK Apartment',
-      availability: 'Available',
-      isShareable: true,
-      ownerName: 'Mr. Saeed Al Falasi',
-      lastUpdated: '12-Mar-2026',
-      sourcePhone: '+971 50 123 4567',
-      photoUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
-      photos: [],
-      mapLink: 'https://www.google.com/maps/place/Dubai+Marina'
+  const [properties, setProperties] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      const response = await fetch('/api/properties');
+      const data = await response.json();
+      setProperties(data);
+    } catch (err) {
+      console.error('Failed to fetch properties:', err);
+    } finally {
+      setLoading(false);
     }
-  ]);
+  };
 
   const togglePrivacy = (id) => {
     setProperties(prev => prev.map(p => 
@@ -96,21 +93,31 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
     }));
   };
 
-  const handleAddProperty = (e) => {
+  const handleAddProperty = async (e) => {
     e.preventDefault();
     const propertyToAdd = {
       ...newProperty,
-      id: Date.now(),
-      availability: 'Available',
-      lastUpdated: new Date().toLocaleDateString(),
       photoUrl: newProperty.photos[0] || 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&q=80'
     };
-    setProperties([propertyToAdd, ...properties]);
-    setShowAddModal(false);
-    setNewProperty({ 
-      name: '', type: 'Apartment', area: '', location: '', unitType: '', sourcePhone: '', mapLink: '',
-      use: 'Residential', purpose: 'Rent', photos: [], price: '', isShareable: true, ownerName: ''
-    });
+
+    try {
+      const response = await fetch('/api/properties', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(propertyToAdd)
+      });
+      
+      if (response.ok) {
+        fetchProperties(); // Refresh list
+        setShowAddModal(false);
+        setNewProperty({ 
+          name: '', type: 'Apartment', area: '', location: '', unitType: '', sourcePhone: '', mapLink: '',
+          use: 'Residential', purpose: 'Rent', photos: [], price: '', isShareable: true, ownerName: ''
+        });
+      }
+    } catch (err) {
+      console.error('Error adding property:', err);
+    }
   };
 
   const handleShareSubmit = (e) => {
@@ -244,11 +251,11 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
       <div className="property-grid">
         {filteredProperties.map(prop => (
           <PropertyCard 
-            key={prop.id} 
+            key={prop._id || prop.id} 
             property={prop} 
             lang={lang}
             onShare={setShowShareModal} 
-            onToggle={() => togglePrivacy(prop.id)}
+            onToggle={() => togglePrivacy(prop._id || prop.id)}
           />
         ))}
       </div>
