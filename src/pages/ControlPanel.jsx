@@ -218,13 +218,31 @@ const ControlPanel = ({ lang = 'en', setLang }) => {
                         </span>
                       </td>
                       <td style={{ padding: '1rem 1.5rem', textAlign: lang === 'ar' ? 'left' : 'right' }}>
-                        <button
-                          onClick={() => { setEditingUser(user); setNewPassword(''); setShowPassword(false); }}
-                          title={lang === 'en' ? 'Reset Password' : 'إعادة تعيين كلمة المرور'}
-                          style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid var(--primary)', cursor: 'pointer', color: 'var(--primary)', padding: '6px 12px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '0.8rem' }}
-                        >
-                          <Key size={14} /> {lang === 'en' ? 'Reset PW' : 'إعادة تعيين'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', justifyContent: lang === 'ar' ? 'flex-start' : 'flex-end' }}>
+                          <button
+                            onClick={() => { setEditingUser(user); setNewPassword(''); setShowPassword(false); }}
+                            title={lang === 'en' ? 'Reset Password' : 'إعادة تعيين كلمة المرور'}
+                            style={{ background: 'rgba(16,185,129,0.1)', border: '1px solid var(--primary)', cursor: 'pointer', color: 'var(--primary)', padding: '6px 12px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '0.8rem' }}
+                          >
+                            <Key size={14} /> {lang === 'en' ? 'Reset PW' : 'إعادة تعيين'}
+                          </button>
+                          {user.email !== 'mwalmallahi@gmail.com' && (
+                            <button
+                              onClick={async () => {
+                                if (!confirm(lang === 'en' ? `Delete user "${user.username}"? This cannot be undone.` : `حذف المستخدم "${user.username}"؟ لا يمكن التراجع.`)) return;
+                                try {
+                                  const res = await fetch(`/api/users/${user._id}`, { method: 'DELETE', headers: { Authorization: `Bearer ${localStorage.getItem('brokerToken')}` } });
+                                  if (res.ok) { fetchUsers(); setSuccessMsg(lang === 'en' ? `User "${user.username}" deleted` : `تم حذف المستخدم "${user.username}"`); setTimeout(() => setSuccessMsg(''), 3000); }
+                                  else { const d = await res.json(); alert(d.error || 'Failed'); }
+                                } catch { alert(lang === 'en' ? 'Could not connect to server' : 'تعذر الاتصال بالخادم'); }
+                              }}
+                              title={lang === 'en' ? 'Delete User' : 'حذف المستخدم'}
+                              style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid #ef4444', cursor: 'pointer', color: '#ef4444', padding: '6px 12px', borderRadius: '6px', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: '600', fontSize: '0.8rem' }}
+                            >
+                              <Trash2 size={14} /> {lang === 'en' ? 'Delete' : 'حذف'}
+                            </button>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))}

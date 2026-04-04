@@ -134,6 +134,19 @@ app.put('/api/users/:id/password', async (req, res) => {
   }
 });
 
+app.delete('/api/users/:id', async (req, res) => {
+  try {
+    if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    if (user.email === 'mwalmallahi@gmail.com') return res.status(403).json({ error: 'Cannot delete admin account' });
+    await User.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
 // Authentication
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
