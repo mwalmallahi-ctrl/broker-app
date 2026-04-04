@@ -6,9 +6,9 @@ import ControlPanel from './pages/ControlPanel';
 import './index.css';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(true); // Demo state
-  const [userRole, setUserRole] = useState('Broker'); // 'Main Editor' or 'Broker'
-  const [userName, setUserName] = useState('John Broker');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState('');
+  const [userName, setUserName] = useState('');
   const [lang, setLang] = useState('en');
 
   return (

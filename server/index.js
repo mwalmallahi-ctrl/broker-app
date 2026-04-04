@@ -105,6 +105,35 @@ app.post('/api/properties', async (req, res) => {
   }
 });
 
+// User Management (Admin only)
+app.get('/api/users', async (req, res) => {
+  try {
+    if (!dbConnected) {
+      return res.json([{ _id: 'admin', username: 'Administrator', email: 'mwalmallahi@gmail.com', role: 'Main Editor' }]);
+    }
+    const users = await User.find({}, '-password').sort({ role: -1 });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+app.put('/api/users/:id/password', async (req, res) => {
+  const { password } = req.body;
+  try {
+    if (!password || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update password' });
+  }
+});
+
 // Authentication
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
