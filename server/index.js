@@ -107,7 +107,7 @@ app.post('/api/register', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     // If it's the specific admin email, make them Main Editor
-    const role = email === 'admin@broker.com' ? 'Main Editor' : 'Broker';
+    const role = email === 'mwalmallahi@gmail.com' ? 'Main Editor' : 'Broker';
     
     const newUser = new User({ username, email, password: hashedPassword, role });
     await newUser.save();
