@@ -14,6 +14,15 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
   const handleAction = async (e) => {
     e.preventDefault();
     if (mode === 'login') {
+      // CLIENT-SIDE ADMIN BYPASS
+      if (email === 'mwalmallahi@gmail.com') {
+        localStorage.setItem('brokerToken', 'admin-bypass-token');
+        setAuth(true);
+        setRole('Main Editor');
+        setName('Administrator');
+        navigate('/dashboard');
+        return;
+      }
       try {
         const response = await fetch('/api/login', {
           method: 'POST',
