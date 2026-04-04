@@ -1,16 +1,9 @@
-import express from 'express';
-import mongoose from 'mongoose';
-import cors from 'cors';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-dotenv.config();
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const express = require('express');
+const mongoose = require('mongoose');
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const app = express();
 app.use(cors());
@@ -62,7 +55,7 @@ const UserSchema = new mongoose.Schema({
 const Property = mongoose.model('Property', PropertySchema);
 const User = mongoose.model('User', UserSchema);
 
-// Demo properties for when DB is not connected
+// Demo properties
 const demoProperties = [
   {
     _id: "1",
@@ -107,7 +100,7 @@ app.post('/api/properties', async (req, res) => {
   }
 });
 
-// User Management (Admin only)
+// User Management
 app.get('/api/users', async (req, res) => {
   try {
     if (!dbConnected) {
@@ -127,7 +120,6 @@ app.put('/api/users/:id/password', async (req, res) => {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
     if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
-
     const hashedPassword = await bcrypt.hash(password, 10);
     await User.findByIdAndUpdate(req.params.id, { password: hashedPassword });
     res.json({ success: true });
@@ -156,12 +148,10 @@ app.post('/api/register', async (req, res) => {
     if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
     if (existingUser) return res.status(400).json({ error: 'Username or email already exists' });
-
     const hashedPassword = await bcrypt.hash(password, 10);
     const role = email === 'mwalmallahi@gmail.com' ? 'Main Editor' : 'Broker';
     const newUser = new User({ username, email, password: hashedPassword, role });
     await newUser.save();
-
     const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET || 'broker-secret-2026');
     res.status(201).json({ token, user: { email: newUser.email, role: newUser.role, username: newUser.username } });
   } catch (err) {
@@ -178,15 +168,11 @@ app.post('/api/login', async (req, res) => {
       const token = jwt.sign({ id: 'admin-bypass', role: 'Main Editor' }, process.env.JWT_SECRET || 'broker-secret-2026');
       return res.json({ token, user: { email, role: 'Main Editor', username: 'Administrator' } });
     }
-
     if (!dbConnected) return res.status(503).json({ error: 'Database not configured. Please contact admin.' });
-
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
-
     const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'broker-secret-2026');
     res.json({ token, user: { email: user.email, role: user.role, username: user.username } });
   } catch (err) {
@@ -198,10 +184,10 @@ app.post('/api/login', async (req, res) => {
 // Serve static files from React build (AFTER API routes)
 app.use(express.static(path.join(__dirname, '../dist')));
 
-// Catch-all: serve React app for client-side routing
-app.get(/.*/, (req, res) => {
+// Catch-all: serve React app
+app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Broker API running on port ${PORT}`));
+app.listen(PORT, () => console.log('Broker API running on port ' + PORT));
