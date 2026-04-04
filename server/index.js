@@ -1,11 +1,16 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-require('dotenv').config();
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
-const path = require('path');
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 app.use(cors());
@@ -55,45 +60,44 @@ const UserSchema = new mongoose.Schema({
 const Property = mongoose.model('Property', PropertySchema);
 const User = mongoose.model('User', UserSchema);
 
+// Demo properties for when DB is not connected
+const demoProperties = [
+  {
+    _id: "1",
+    name: 'Skyline Residences',
+    type: 'Luxury Residential',
+    area: '1,450',
+    location: 'Dubai Marina, UAE',
+    unitType: '2BHK Apartment',
+    availability: 'Available',
+    lastUpdated: new Date(),
+    sourcePhone: '+971 50 123 4567',
+    photoUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
+    mapLink: 'https://www.google.com/maps/place/Dubai+Marina',
+    use: 'Residential',
+    purpose: 'Rent',
+    price: '120,000',
+    ownerName: 'Mr. Saeed Al Falasi',
+    isShareable: true
+  }
+];
+
 // API Routes
 app.get('/api/properties', async (req, res) => {
   try {
+    if (!dbConnected) return res.json(demoProperties);
     const properties = await Property.find().sort({ lastUpdated: -1 });
-    if (properties.length === 0) {
-      // Return dummy data if DB is empty for initial demo
-      return res.json([
-        {
-          _id: "1",
-          name: 'Skyline Residences',
-          type: 'Luxury Residential',
-          area: '1,450',
-          location: 'Dubai Marina, UAE',
-          unitType: '2BHK Apartment',
-          availability: 'Available',
-          lastUpdated: new Date(),
-          sourcePhone: '+971 50 123 4567',
-          photoUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
-          mapLink: 'https://www.google.com/maps/place/Dubai+Marina',
-          use: 'Residential',
-          purpose: 'Rent',
-          price: '120,000',
-          ownerName: 'Mr. Saeed Al Falasi',
-          isShareable: true
-        }
-      ]);
-    }
+    if (properties.length === 0) return res.json(demoProperties);
     res.json(properties);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch properties' });
+    res.json(demoProperties);
   }
 });
 
 app.post('/api/properties', async (req, res) => {
   try {
-    const newProperty = new Property({
-      ...req.body,
-      lastUpdated: new Date()
-    });
+    if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
+    const newProperty = new Property({ ...req.body, lastUpdated: new Date() });
     const saved = await newProperty.save();
     res.status(201).json(saved);
   } catch (err) {
@@ -101,55 +105,37 @@ app.post('/api/properties', async (req, res) => {
   }
 });
 
-// Authentication logic
+// Authentication
 app.post('/api/register', async (req, res) => {
   const { username, email, password } = req.body;
   try {
+    if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
     const existingUser = await User.findOne({ $or: [{ email }, { username }] });
-    if (existingUser) {
-      return res.status(400).json({ error: 'Username or email already exists' });
-    }
+    if (existingUser) return res.status(400).json({ error: 'Username or email already exists' });
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    // If it's the specific admin email, make them Main Editor
     const role = email === 'mwalmallahi@gmail.com' ? 'Main Editor' : 'Broker';
-    
     const newUser = new User({ username, email, password: hashedPassword, role });
     await newUser.save();
-    
-    const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET || "SECRET_KEY");
-    
-    res.status(201).json({ 
-      token, 
-      user: { email: newUser.email, role: newUser.role, username: newUser.username } 
-    });
+
+    const token = jwt.sign({ id: newUser._id, role: newUser.role }, process.env.JWT_SECRET || 'broker-secret-2026');
+    res.status(201).json({ token, user: { email: newUser.email, role: newUser.role, username: newUser.username } });
   } catch (err) {
     console.error('Registration failed:', err);
     res.status(500).json({ error: 'Registration failed' });
   }
 });
 
-
-
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    // ---- ADMIN BYPASS (works without database) ----
+    // ADMIN BYPASS - works without database
     if (email === 'mwalmallahi@gmail.com') {
-      const token = jwt.sign({ id: "admin-bypass", role: "Main Editor" }, process.env.JWT_SECRET || "broker-secret-2026");
-      return res.json({ 
-        token, 
-        user: { 
-          email: email, 
-          role: "Main Editor",
-          username: "Administrator"
-        } 
-      });
+      const token = jwt.sign({ id: 'admin-bypass', role: 'Main Editor' }, process.env.JWT_SECRET || 'broker-secret-2026');
+      return res.json({ token, user: { email, role: 'Main Editor', username: 'Administrator' } });
     }
 
-    if (!dbConnected) {
-      return res.status(503).json({ error: 'Database not configured. Please contact admin.' });
-    }
+    if (!dbConnected) return res.status(503).json({ error: 'Database not configured. Please contact admin.' });
 
     const user = await User.findOne({ email });
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
@@ -157,7 +143,7 @@ app.post('/api/login', async (req, res) => {
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "broker-secret-2026");
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || 'broker-secret-2026');
     res.json({ token, user: { email: user.email, role: user.role, username: user.username } });
   } catch (err) {
     console.error('Login failed:', err);
@@ -165,11 +151,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// For any other request, send back the index.html
+// Catch-all: serve React app
 app.get(/.*/, (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Broker API running on port ${PORT}`));
-
