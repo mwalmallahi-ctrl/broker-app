@@ -14,11 +14,16 @@ app.use(express.json());
 // Serve static files from the React app
 app.use(express.static(path.join(__dirname, '../dist')));
 
-// MongoDB Connection
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/brokerApp';
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// MongoDB Connection (non-fatal - app works without it)
+const MONGODB_URI = process.env.MONGODB_URI;
+let dbConnected = false;
+if (MONGODB_URI) {
+  mongoose.connect(MONGODB_URI)
+    .then(() => { console.log('Connected to MongoDB'); dbConnected = true; })
+    .catch(err => console.error('MongoDB connection error (app will still run):', err));
+} else {
+  console.log('No MONGODB_URI set - running without database (demo mode)');
+}
 
 // Schemas
 const PropertySchema = new mongoose.Schema({
@@ -129,9 +134,9 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    // ---- ADMIN BYPASS ----
+    // ---- ADMIN BYPASS (works without database) ----
     if (email === 'mwalmallahi@gmail.com') {
-      const token = jwt.sign({ id: "admin-bypass", role: "Main Editor" }, process.env.JWT_SECRET || "SECRET_KEY");
+      const token = jwt.sign({ id: "admin-bypass", role: "Main Editor" }, process.env.JWT_SECRET || "broker-secret-2026");
       return res.json({ 
         token, 
         user: { 
@@ -142,25 +147,18 @@ app.post('/api/login', async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+    if (!dbConnected) {
+      return res.status(503).json({ error: 'Database not configured. Please contact admin.' });
     }
+
+    const user = await User.findOne({ email });
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
 
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    if (!isMatch) return res.status(401).json({ error: 'Invalid credentials' });
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "SECRET_KEY");
-    res.json({ 
-      token, 
-      user: { 
-        email: user.email, 
-        role: user.role,
-        username: user.username
-      } 
-    });
+    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET || "broker-secret-2026");
+    res.json({ token, user: { email: user.email, role: user.role, username: user.username } });
   } catch (err) {
     console.error('Login failed:', err);
     res.status(500).json({ error: 'Login failed' });
