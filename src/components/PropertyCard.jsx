@@ -216,27 +216,26 @@ const PropertyCard = ({ property, onShare, onToggle, onDelete, onView, userRole,
               <UserPlus size={16} color="var(--primary)" />
             </button>
           )}
-          {userRole === 'Main Editor' && (
-            <button 
-              className="btn-glass" 
-              onClick={onDelete}
-              title={lang === 'en' ? "Delete Property" : "حذف العقار"}
-              style={{ 
-                padding: '0.75rem', 
-                background: 'rgba(239, 68, 68, 0.1)', 
-                border: '1px solid rgba(239, 68, 68, 0.3)',
-                color: '#ef4444',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transition: '0.2s'
-              }}
-            >
-              <Trash2 size={16} />
-            </button>
-          )}
+          
+          <button 
+            className="btn-glass" 
+            onClick={onDelete}
+            title={lang === 'en' ? "Delete Property" : "حذف العقار"}
+            style={{ 
+              padding: '0.75rem', 
+              background: 'rgba(239, 68, 68, 0.1)', 
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#ef4444',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: '0.2s'
+            }}
+          >
+            <Trash2 size={16} />
+          </button>
         </div>
       </div>
     </div>

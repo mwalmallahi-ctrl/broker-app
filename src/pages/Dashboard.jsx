@@ -195,7 +195,21 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
             {viewProperty.sourcePhone && <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.phone || 'Phone'}</span> <a href={`tel:${viewProperty.sourcePhone}`} style={{color: 'inherit', fontWeight: 'bold', fontSize: '1.1rem'}}>{viewProperty.sourcePhone}</a></div>}
           </div>
 
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+          <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px' }}>
+            {viewProperty.photos && viewProperty.photos.length > 0 ? (
+              viewProperty.photos.map((photo, idx) => (
+                <div key={idx} style={{ width: '100%', height: '100px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                  <img src={photo} alt={`${viewProperty.name} ${idx+1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+              ))
+            ) : (
+               <div style={{ width: '100%', height: '100px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
+                  <img src={viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} alt="Default" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+               </div>
+            )}
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
             <a 
               href={`https://wa.me/?text=${encodeURIComponent(`Check out this property:\n\n*Name:* ${viewProperty.name}\n*Type:* ${viewProperty.type} - ${viewProperty.use}\n*Price:* ${viewProperty.price} AED\n*Location:* ${viewProperty.location}\n*Area:* ${viewProperty.area} SQFT\n*Map Link:* ${viewProperty.mapLink}`)}`} 
               target="_blank" 
@@ -205,19 +219,18 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
             >
               <Send size={20} /> {lang === 'en' ? 'Share Profile via WhatsApp' : 'شارك الملف عبر واتساب'}
             </a>
-            {userRole === 'Main Editor' && (
-              <button 
-                onClick={() => { handleDeleteProperty(viewProperty._id || viewProperty.id); setViewProperty(null); }}
-                style={{ 
-                  flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', 
-                  background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)',
-                  borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
-                  cursor: 'pointer'
-                }}
-              >
-                <Trash2 size={20} /> {lang === 'en' ? 'Delete Property' : 'حذف العقار'}
-              </button>
-            )}
+            
+            <button 
+              onClick={() => { handleDeleteProperty(viewProperty._id || viewProperty.id); setViewProperty(null); }}
+              style={{ 
+                flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', 
+                background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)',
+                borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
+                cursor: 'pointer'
+              }}
+            >
+              <Trash2 size={20} /> {lang === 'en' ? 'Delete Property' : 'حذف العقار'}
+            </button>
           </div>
         </div>
       ) : (
