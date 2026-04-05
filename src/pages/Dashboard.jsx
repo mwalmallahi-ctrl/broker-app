@@ -359,7 +359,7 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
             onShare={setShowShareModal} 
             onToggle={() => togglePrivacy(prop._id || prop.id)}
             onDelete={() => handleDeleteProperty(prop._id || prop.id)}
-            onView={() => setViewProperty(prop)}
+            onView={() => { setViewProperty(prop); window.scrollTo(0, 0); }}
           />
         ))}
       </div>
