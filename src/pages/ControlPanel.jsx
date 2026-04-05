@@ -10,6 +10,7 @@ const ControlPanel = ({ lang = 'en', setLang, onLogout }) => {
   const t = translations[lang];
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
+  const [allProperties, setAllProperties] = useState([]);
   const [loadingUsers, setLoadingUsers] = useState(true);
   const [editingUser, setEditingUser] = useState(null);
   const [newPassword, setNewPassword] = useState('');
@@ -19,13 +20,26 @@ const ControlPanel = ({ lang = 'en', setLang, onLogout }) => {
 
   const stats = [
     { label: t.totalBrokers || 'Total Brokers', value: users.length.toString(), icon: <Users size={20} />, color: '#10b981' },
-    { label: t.liveProperties || 'Live Properties', value: '—', icon: <Building size={20} />, color: '#3b82f6' },
-    { label: t.rentedThisMonth || 'Rented This Month', value: '—', icon: <BarChart3 size={20} />, color: '#8b5cf6' },
+    { label: lang === 'en' ? 'Total Properties' : 'إجمالي العقارات', value: allProperties.length.toString(), icon: <Building size={20} />, color: '#3b82f6' },
+    { label: lang === 'en' ? 'Shared Properties' : 'العقارات المشتركة', value: allProperties.filter(p => p.isShareable).length.toString(), icon: <Globe size={20} />, color: '#8b5cf6' },
   ];
 
   useEffect(() => {
     fetchUsers();
+    fetchProperties();
   }, []);
+
+  const fetchProperties = async () => {
+    try {
+      const res = await fetch('/api/properties');
+      if (res.ok) {
+        const data = await res.json();
+        setAllProperties(data);
+      }
+    } catch {
+      console.error("Failed to fetch properties for stats");
+    }
+  };
 
   const fetchUsers = async () => {
     try {
