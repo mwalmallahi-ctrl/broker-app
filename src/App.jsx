@@ -11,6 +11,13 @@ function App() {
   const [userName, setUserName] = useState('');
   const [lang, setLang] = useState('en');
 
+  const handleLogout = () => {
+    localStorage.removeItem('brokerToken');
+    setIsAuthenticated(false);
+    setUserRole('');
+    setUserName('');
+  };
+
   return (
     <Router>
       <div 
@@ -25,11 +32,11 @@ function App() {
           />
           <Route 
             path="/dashboard" 
-            element={isAuthenticated ? <Dashboard userName={userName} userRole={userRole} lang={lang} setLang={setLang} /> : <Navigate to="/login" />} 
+            element={isAuthenticated ? <Dashboard userName={userName} userRole={userRole} lang={lang} setLang={setLang} onLogout={handleLogout} /> : <Navigate to="/login" />} 
           />
           <Route 
             path="/panel" 
-            element={isAuthenticated && userRole === 'Main Editor' ? <ControlPanel lang={lang} setLang={setLang} /> : <Navigate to="/dashboard" />} 
+            element={isAuthenticated && userRole === 'Main Editor' ? <ControlPanel lang={lang} setLang={setLang} onLogout={handleLogout} /> : <Navigate to="/dashboard" />} 
           />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>

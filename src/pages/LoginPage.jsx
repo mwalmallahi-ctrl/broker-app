@@ -107,19 +107,17 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
         </button>
 
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-          <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            background: 'var(--primary)', 
-            borderRadius: '16px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            margin: '0 auto 1.5rem',
-            boxShadow: 'var(--shadow-glow)'
-          }}>
-            {mode === 'register' ? <User size={32} color="white" /> : <LogIn size={32} color="white" />}
-          </div>
+          <img 
+            src="/logo.png" 
+            alt="MW Real Estate" 
+            style={{ 
+              width: '120px', 
+              height: 'auto', 
+              margin: '0 auto 1rem',
+              display: 'block',
+              filter: 'drop-shadow(0 4px 12px rgba(16, 185, 129, 0.2))'
+            }} 
+          />
           <h2 style={{ fontSize: '1.75rem', fontWeight: '800', marginBottom: '0.5rem' }}>
             {getTitle()}
           </h2>

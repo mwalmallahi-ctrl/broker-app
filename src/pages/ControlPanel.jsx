@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { translations } from '../constants/translations';
 import { 
   Users, Building, Settings, BarChart3, Plus, 
-  Trash2, Edit, ShieldCheck, Mail, Shield, Languages, ArrowLeft, X, Key, Eye, EyeOff, Save
+  Trash2, Edit, ShieldCheck, Mail, Shield, Languages, ArrowLeft, X, Key, Eye, EyeOff, Save, LogOut
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
-const ControlPanel = ({ lang = 'en', setLang }) => {
+const ControlPanel = ({ lang = 'en', setLang, onLogout }) => {
   const t = translations[lang];
   const [activeTab, setActiveTab] = useState('users');
   const [users, setUsers] = useState([]);
@@ -95,9 +95,7 @@ const ControlPanel = ({ lang = 'en', setLang }) => {
         flexDirection: 'column'
       }}>
         <div style={{ marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ padding: '8px', background: 'var(--primary)', borderRadius: '8px' }}>
-            <Shield size={24} color="white" />
-          </div>
+          <img src="/logo.png" alt="MW Real Estate" style={{ width: '40px', height: 'auto' }} />
           <h2 style={{ fontSize: '1.25rem', fontWeight: '800' }}>{t.adminHub || 'Admin Hub'}</h2>
         </div>
 
@@ -140,6 +138,16 @@ const ControlPanel = ({ lang = 'en', setLang }) => {
         }}>
           <ArrowLeft size={16} style={{ transform: lang === 'ar' ? 'rotate(180deg)' : 'none' }} /> {t.back || 'Back'}
         </Link>
+        <button 
+          onClick={() => { if (onLogout) onLogout(); window.location.href = '/login'; }}
+          style={{ 
+            display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', 
+            color: '#f87171', background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)',
+            borderRadius: '8px', fontSize: '0.9rem', fontWeight: '600', cursor: 'pointer', marginTop: '8px', width: '100%'
+          }}
+        >
+          <LogOut size={16} /> {lang === 'en' ? 'Sign Out' : 'تسجيل خروج'}
+        </button>
       </aside>
 
       {/* Main Content */}

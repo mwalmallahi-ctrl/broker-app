@@ -6,10 +6,10 @@ import {
   Search, Plus, Filter, LayoutGrid, List, Shield, X, MapPin, 
   Building, Square, Phone, Store, Home, Key, Tag, 
   Image as LucideImage, Share, UserPlus, Upload, Trash2, Send, Coins,
-  Globe, Lock, Eye, EyeOff, UserCheck, Languages
+  Globe, Lock, Eye, EyeOff, UserCheck, Languages, LogOut
 } from 'lucide-react';
 
-const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLang }) => {
+const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLang, onLogout }) => {
   const t = translations[lang];
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
@@ -151,11 +151,14 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
         flexWrap: 'wrap',
         gap: '1rem'
       }}>
-        <div>
-          <h1 style={{ fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.02em', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-            {t.welcome}, {userName}!
-          </h1>
-          <p style={{ color: 'var(--text-muted)' }}>{t.hubSubtitle}</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <img src="/logo.png" alt="MW Real Estate" style={{ width: '60px', height: 'auto' }} />
+          <div>
+            <h1 style={{ fontSize: '2.5rem', fontWeight: '800', letterSpacing: '-0.02em', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              {t.welcome}, {userName}!
+            </h1>
+            <p style={{ color: 'var(--text-muted)' }}>{t.hubSubtitle}</p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
           <button 
@@ -198,6 +201,24 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
             style={{ borderRadius: '10px', padding: '0.75rem 1.5rem' }}
           >
             <Plus size={18} /> {t.addProperty}
+          </button>
+          <button 
+            onClick={() => { if (onLogout) onLogout(); window.location.href = '/login'; }}
+            style={{
+              padding: '0.75rem 1.25rem',
+              borderRadius: '10px',
+              border: '1px solid rgba(239,68,68,0.3)',
+              background: 'rgba(239,68,68,0.1)',
+              color: '#f87171',
+              display: 'flex',
+              gap: '8px',
+              alignItems: 'center',
+              fontWeight: '600',
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            <LogOut size={18} /> {lang === 'en' ? 'Sign Out' : 'تسجيل خروج'}
           </button>
         </div>
       </div>
