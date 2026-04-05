@@ -112,6 +112,25 @@ app.post('/api/properties', async (req, res) => {
   }
 });
 
+app.delete('/api/properties/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!dbConnected) {
+      const index = inMemoryProperties.findIndex(p => p._id === id || p.id === id);
+      if (index > -1) {
+        inMemoryProperties.splice(index, 1);
+        return res.json({ success: true });
+      }
+      return res.status(404).json({ error: 'Property not found' });
+    }
+    await Property.findByIdAndDelete(id);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Failed to delete property:', err.message);
+    res.status(500).json({ error: 'Failed to delete property: ' + err.message });
+  }
+});
+
 // User Management
 app.get('/api/users', async (req, res) => {
   try {

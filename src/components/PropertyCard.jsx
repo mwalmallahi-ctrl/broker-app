@@ -1,7 +1,7 @@
 import { translations } from '../constants/translations';
-import { MapPin, Phone, Square, Calendar, Share2, ExternalLink, UserPlus, Coins, Globe, Lock, Eye, EyeOff, UserCheck, Home, Store } from 'lucide-react';
+import { MapPin, Phone, Square, Calendar, Share2, ExternalLink, UserPlus, Coins, Globe, Lock, Eye, EyeOff, UserCheck, Home, Store, FileText, Trash2, Send } from 'lucide-react';
 
-const PropertyCard = ({ property, onShare, onToggle, lang = 'en' }) => {
+const PropertyCard = ({ property, onShare, onToggle, onDelete, onView, userRole, lang = 'en' }) => {
   const t = translations[lang];
   const {
     name, type, area, location, unitType, 
@@ -142,6 +142,29 @@ const PropertyCard = ({ property, onShare, onToggle, lang = 'en' }) => {
           )}
         </div>
 
+        <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+          <button 
+            onClick={onView}
+            className="btn-primary" 
+            style={{ flex: 1, justifyContent: 'center', padding: '0.75rem 1rem', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--primary)', border: '1px solid rgba(16, 185, 129, 0.3)' }}
+          >
+            <FileText size={16} /> {lang === 'en' ? 'View Details' : 'عرض التفاصيل'}
+          </button>
+          
+          <a 
+            href={`https://wa.me/?text=${encodeURIComponent(`Check out this property:\n\n*Name:* ${name}\n*Type:* ${type} - ${use}\n*Price:* ${price} AED\n*Location:* ${location}\n*Area:* ${area} SQFT\n*Map Link:* ${mapLink}`)}`} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="btn-glass" 
+            style={{ 
+              padding: '0.75rem', background: '#25D366', color: 'white', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none' 
+            }}
+            title="WhatsApp"
+          >
+            <Send size={16} />
+          </a>
+        </div>
+
         <div style={{ display: 'flex', gap: '8px' }}>
           <a 
             href={mapLink} 
@@ -191,6 +214,27 @@ const PropertyCard = ({ property, onShare, onToggle, lang = 'en' }) => {
               }}
             >
               <UserPlus size={16} color="var(--primary)" />
+            </button>
+          )}
+          {userRole === 'Main Editor' && (
+            <button 
+              className="btn-glass" 
+              onClick={onDelete}
+              title={lang === 'en' ? "Delete Property" : "حذف العقار"}
+              style={{ 
+                padding: '0.75rem', 
+                background: 'rgba(239, 68, 68, 0.1)', 
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#ef4444',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transition: '0.2s'
+              }}
+            >
+              <Trash2 size={16} />
             </button>
           )}
         </div>
