@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { translations } from '../constants/translations';
 import { 
   Users, Building, Settings, BarChart3, Plus, 
-  Trash2, Edit, ShieldCheck, Mail, Shield, Languages, ArrowLeft, X, Key, Eye, EyeOff, Save, LogOut
+  Trash2, Edit, ShieldCheck, Mail, Shield, Languages, ArrowLeft, X, Key, Eye, EyeOff, Save, LogOut, Globe
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
