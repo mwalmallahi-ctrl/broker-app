@@ -4,15 +4,16 @@ import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import ControlPanel from './pages/ControlPanel';
 import './index.css';
-
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState('');
-  const [userName, setUserName] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('brokerToken'));
+  const [userRole, setUserRole] = useState(localStorage.getItem('brokerRole') || '');
+  const [userName, setUserName] = useState(localStorage.getItem('brokerName') || '');
   const [lang, setLang] = useState('en');
 
   const handleLogout = () => {
     localStorage.removeItem('brokerToken');
+    localStorage.removeItem('brokerRole');
+    localStorage.removeItem('brokerName');
     setIsAuthenticated(false);
     setUserRole('');
     setUserName('');

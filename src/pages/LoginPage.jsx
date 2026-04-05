@@ -33,6 +33,8 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
         
         if (response.ok) {
           localStorage.setItem('brokerToken', data.token);
+          localStorage.setItem('brokerRole', data.user.role);
+          localStorage.setItem('brokerName', data.user.username);
           setAuth(true);
           setRole(data.user.role);
           setName(data.user.username);
