@@ -168,7 +168,9 @@ const ControlPanel = ({ lang = 'en', setLang, onLogout }) => {
       <main style={{ flex: 1, padding: '2.5rem' }}>
         <header style={{ marginBottom: '2.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: '800' }}>{t.controlPanel || 'Control Panel'}</h1>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: '800', background: 'linear-gradient(to right, #fff, #94a3b8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              {lang === 'en' ? 'Welcome, Mohammed Waheed' : 'مرحباً يا محمد وحيد'}
+            </h1>
             <p style={{ color: 'var(--text-muted)' }}>{lang === 'en' ? 'Real Estate Governance & Operations' : 'عمليات وحوكمة العقارات'}</p>
           </div>
         </header>
