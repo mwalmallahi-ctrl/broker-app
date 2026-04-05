@@ -17,12 +17,15 @@ app.get('/api/health', (req, res) => {
 // MongoDB Connection (non-fatal - app works without it)
 const MONGODB_URI = process.env.MONGODB_URI;
 let dbConnected = false;
+const inMemoryProperties = []; // Fallback storage when DB is down
+
 if (MONGODB_URI) {
+  console.log('Connecting to MongoDB...', MONGODB_URI.substring(0, 30) + '...');
   mongoose.connect(MONGODB_URI)
-    .then(() => { console.log('Connected to MongoDB'); dbConnected = true; })
-    .catch(err => console.error('MongoDB connection error (app will still run):', err));
+    .then(() => { console.log('SUCCESS: Connected to MongoDB!'); dbConnected = true; })
+    .catch(err => console.error('FAILED to connect to MongoDB:', err.message));
 } else {
-  console.log('No MONGODB_URI set - running without database (demo mode)');
+  console.log('WARNING: No MONGODB_URI set - running without database (demo mode)');
 }
 
 // Schemas
@@ -80,23 +83,31 @@ const demoProperties = [
 // API Routes
 app.get('/api/properties', async (req, res) => {
   try {
-    if (!dbConnected) return res.json(demoProperties);
+    if (!dbConnected) return res.json([...demoProperties, ...inMemoryProperties]);
     const properties = await Property.find().sort({ lastUpdated: -1 });
-    if (properties.length === 0) return res.json(demoProperties);
-    res.json(properties);
+    if (properties.length === 0) return res.json([...demoProperties, ...inMemoryProperties]);
+    res.json([...properties, ...inMemoryProperties]);
   } catch (err) {
-    res.json(demoProperties);
+    res.json([...demoProperties, ...inMemoryProperties]);
   }
 });
 
 app.post('/api/properties', async (req, res) => {
   try {
-    if (!dbConnected) return res.status(503).json({ error: 'Database not configured' });
+    if (!dbConnected) {
+      // Save to in-memory as fallback
+      const memProperty = { ...req.body, _id: 'mem_' + Date.now(), lastUpdated: new Date() };
+      inMemoryProperties.push(memProperty);
+      console.log('Property saved to memory (DB not connected). Total:', inMemoryProperties.length);
+      return res.status(201).json(memProperty);
+    }
     const newProperty = new Property({ ...req.body, lastUpdated: new Date() });
     const saved = await newProperty.save();
+    console.log('Property saved to MongoDB:', saved.name);
     res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to add property' });
+    console.error('Failed to add property:', err.message);
+    res.status(500).json({ error: 'Failed to add property: ' + err.message });
   }
 });
 

@@ -103,20 +103,30 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
     try {
       const response = await fetch('/api/properties', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('brokerToken')}`
+        },
         body: JSON.stringify(propertyToAdd)
       });
       
       if (response.ok) {
-        fetchProperties(); // Refresh list
+        const saved = await response.json();
+        // Add to local list immediately
+        setProperties(prev => [saved, ...prev]);
         setShowAddModal(false);
         setNewProperty({ 
           name: '', type: 'Apartment', area: '', location: '', unitType: '', sourcePhone: '', mapLink: '',
           use: 'Residential', purpose: 'Rent', photos: [], price: '', isShareable: true, ownerName: ''
         });
+        alert(lang === 'en' ? '✅ Property added successfully!' : '✅ تمت إضافة العقار بنجاح!');
+      } else {
+        const errData = await response.json();
+        alert(lang === 'en' ? `❌ Failed to save: ${errData.error}` : `❌ فشل الحفظ: ${errData.error}`);
       }
     } catch (err) {
       console.error('Error adding property:', err);
+      alert(lang === 'en' ? '❌ Could not connect to server. Please try again.' : '❌ تعذر الاتصال بالخادم. حاول مرة أخرى.');
     }
   };
 
