@@ -6,7 +6,7 @@ import {
   Search, Plus, Filter, LayoutGrid, List, Shield, X, MapPin, 
   Building, Square, Phone, Store, Home, Key, Tag, 
   Image as LucideImage, Share, UserPlus, Upload, Trash2, Send, Coins,
-  Globe, Lock, Eye, EyeOff, UserCheck, Languages, LogOut
+  Globe, Lock, Eye, EyeOff, UserCheck, Languages, LogOut, ArrowLeft
 } from 'lucide-react';
 
 const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLang, onLogout }) => {
@@ -165,7 +165,64 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
 
   return (
     <div style={{ padding: '2rem 1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
-      {/* Header Section */}
+      
+      {/* View Property Full Page */}
+      {viewProperty ? (
+        <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
+          <button 
+            className="btn-glass" 
+            onClick={() => setViewProperty(null)}
+            style={{ padding: '10px 16px', cursor: 'pointer', border: '1px solid var(--border-glass)', marginBottom: '1.5rem', display: 'flex', gap: '8px', alignItems: 'center' }}
+          >
+            <ArrowLeft size={18} style={{ transform: lang === 'ar' ? 'rotate(180deg)' : 'none' }} /> 
+            {lang === 'en' ? 'Back to Dashboard' : 'العودة للوحة القيادة'}
+          </button>
+
+          <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1.5rem' }}>{viewProperty.name}</h2>
+          
+          <div style={{ width: '100%', height: '400px', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+            <img src={viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} alt={viewProperty.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', color: 'white', backgroundColor: 'rgba(0,0,0,0.2)', padding: '2rem', borderRadius: '12px' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.type || 'Type'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.type} ({viewProperty.use})</strong></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.price || 'Price'}</span> <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{viewProperty.price} {viewProperty.purpose === 'Rent' ? (lang === 'en' ? 'AED/Yr' : 'درهم/سنوي') : (lang === 'en' ? 'AED' : 'درهم')}</strong></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.location || 'Location'}</span> <a href={viewProperty.mapLink} target="_blank" rel="noreferrer" style={{color: 'var(--primary)', fontWeight: 'bold'}}>{viewProperty.location}</a></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.area || 'Area'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.area} {t.sqft}</strong></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.unitType || 'Unit'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.unitType}</strong></div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.availability || 'Availability'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.availability}</strong></div>
+            {viewProperty.ownerName && <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.ownerName || 'Owner'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.ownerName}</strong></div>}
+            {viewProperty.sourcePhone && <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.phone || 'Phone'}</span> <a href={`tel:${viewProperty.sourcePhone}`} style={{color: 'inherit', fontWeight: 'bold', fontSize: '1.1rem'}}>{viewProperty.sourcePhone}</a></div>}
+          </div>
+
+          <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
+            <a 
+              href={`https://wa.me/?text=${encodeURIComponent(`Check out this property:\n\n*Name:* ${viewProperty.name}\n*Type:* ${viewProperty.type} - ${viewProperty.use}\n*Price:* ${viewProperty.price} AED\n*Location:* ${viewProperty.location}\n*Area:* ${viewProperty.area} SQFT\n*Map Link:* ${viewProperty.mapLink}`)}`} 
+              target="_blank" 
+              rel="noreferrer"
+              className="btn-primary" 
+              style={{ flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', background: '#25D366', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}
+            >
+              <Send size={20} /> {lang === 'en' ? 'Share Profile via WhatsApp' : 'شارك الملف عبر واتساب'}
+            </a>
+            {userRole === 'Main Editor' && (
+              <button 
+                onClick={() => { handleDeleteProperty(viewProperty._id || viewProperty.id); setViewProperty(null); }}
+                style={{ 
+                  flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', 
+                  background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)',
+                  borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
+                  cursor: 'pointer'
+                }}
+              >
+                <Trash2 size={20} /> {lang === 'en' ? 'Delete Property' : 'حذف العقار'}
+              </button>
+            )}
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Header Section */}
       <div style={{ 
         display: 'flex', 
         justifyContent: 'space-between', 
@@ -542,57 +599,7 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
           </div>
         </div>
       )}
-      {/* View Property Modal */}
-      {viewProperty && (
-        <div className="modal-overlay">
-          <div className="modal-content glass-card" style={{ maxWidth: '600px', width: '100%', padding: '2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: '800' }}>{viewProperty.name}</h2>
-              <button 
-                className="btn-glass" 
-                onClick={() => setViewProperty(null)}
-                style={{ padding: '8px', cursor: 'pointer', border: 'none', background: 'transparent', color: 'var(--text-muted)' }}
-              >
-                <X size={24} />
-              </button>
-            </div>
-            
-            <div style={{ width: '100%', height: '250px', borderRadius: '12px', overflow: 'hidden', marginBottom: '1.5rem' }}>
-              <img src={viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} alt={viewProperty.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', color: 'var(--text-muted)' }}>
-              <div><strong>{t.type || 'Type'}:</strong> {viewProperty.type} ({viewProperty.use})</div>
-              <div><strong>{t.price || 'Price'}:</strong> {viewProperty.price} {viewProperty.purpose === 'Rent' ? (lang === 'en' ? 'AED/Yr' : 'درهم/سنوي') : (lang === 'en' ? 'AED' : 'درهم')}</div>
-              <div><strong>{t.location || 'Location'}:</strong> <a href={viewProperty.mapLink} target="_blank" rel="noreferrer" style={{color: 'var(--primary)'}}>{viewProperty.location}</a></div>
-              <div><strong>{t.area || 'Area'}:</strong> {viewProperty.area} {t.sqft}</div>
-              <div><strong>{t.unitType || 'Unit'}:</strong> {viewProperty.unitType}</div>
-              <div><strong>{t.availability || 'Availability'}:</strong> {viewProperty.availability}</div>
-              {viewProperty.ownerName && <div><strong>{t.ownerName || 'Owner'}:</strong> {viewProperty.ownerName}</div>}
-              {viewProperty.sourcePhone && <div><strong>{t.phone || 'Phone'}:</strong> <a href={`tel:${viewProperty.sourcePhone}`} style={{color: 'inherit'}}>{viewProperty.sourcePhone}</a></div>}
-            </div>
-
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-              <a 
-                href={`https://wa.me/?text=${encodeURIComponent(`Check out this property:\n\n*Name:* ${viewProperty.name}\n*Type:* ${viewProperty.type} - ${viewProperty.use}\n*Price:* ${viewProperty.price} AED\n*Location:* ${viewProperty.location}\n*Area:* ${viewProperty.area} SQFT\n*Map Link:* ${viewProperty.mapLink}`)}`} 
-                target="_blank" 
-                rel="noreferrer"
-                className="btn-primary" 
-                style={{ flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', background: '#25D366' }}
-              >
-                {lang === 'en' ? 'Share via WhatsApp' : 'شارك عبر واتساب'}
-              </a>
-              <button 
-                type="button" 
-                className="btn-glass" 
-                onClick={() => setViewProperty(null)}
-                style={{ flex: 1, padding: '1rem', border: '1px solid var(--border-glass)' }}
-              >
-                {t.cancel}
-              </button>
-            </div>
-          </div>
-        </div>
+        </>
       )}
 
     </div>
