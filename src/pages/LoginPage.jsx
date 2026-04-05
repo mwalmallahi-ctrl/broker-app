@@ -98,16 +98,16 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
       {/* Animated Cityscape Background */}
       <style>{`
         @keyframes buildingRise1 {
-          0%, 100% { opacity: 0.08; transform: translateY(10px); }
-          50% { opacity: 0.2; transform: translateY(0px); }
+          0%, 100% { opacity: 0.06; transform: translateY(12px); }
+          50% { opacity: 0.22; transform: translateY(0px); }
         }
         @keyframes buildingRise2 {
-          0%, 100% { opacity: 0.05; transform: translateY(15px); }
-          50% { opacity: 0.15; transform: translateY(0px); }
+          0%, 100% { opacity: 0.04; transform: translateY(18px); }
+          50% { opacity: 0.18; transform: translateY(0px); }
         }
         @keyframes buildingRise3 {
-          0%, 100% { opacity: 0.06; transform: translateY(8px); }
-          50% { opacity: 0.18; transform: translateY(-3px); }
+          0%, 100% { opacity: 0.05; transform: translateY(10px); }
+          50% { opacity: 0.2; transform: translateY(-2px); }
         }
         @keyframes floatParticle {
           0% { transform: translateY(100vh) scale(0); opacity: 0; }
@@ -116,17 +116,25 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
           100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
         @keyframes pulseGlow {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.6; }
+          0%, 100% { opacity: 0.25; }
+          50% { opacity: 0.55; }
+        }
+        @keyframes cityLabelFade {
+          0%, 100% { opacity: 0; }
+          30%, 70% { opacity: 1; }
         }
         .city-layer { position: absolute; bottom: 0; left: 0; width: 100%; pointer-events: none; }
         .particle {
           position: absolute;
-          width: 3px;
-          height: 3px;
-          background: rgba(16, 185, 129, 0.6);
           border-radius: 50%;
           animation: floatParticle linear infinite;
+        }
+        .city-label {
+          font-family: 'Inter', sans-serif;
+          font-size: 11px;
+          letter-spacing: 3px;
+          text-transform: uppercase;
+          animation: cityLabelFade 10s ease-in-out infinite;
         }
       `}</style>
 
@@ -141,78 +149,161 @@ const LoginPage = ({ setAuth, setRole, setName, lang = 'en', setLang }) => {
         pointerEvents: 'none'
       }} />
 
-      {/* Building Layer 1 - Back */}
-      <svg className="city-layer" viewBox="0 0 1440 320" style={{ animation: 'buildingRise1 8s ease-in-out infinite', height: '45%' }}>
-        <rect x="50" y="80" width="60" height="240" rx="2" fill="rgba(16,185,129,0.08)" />
-        <rect x="55" y="90" width="8" height="12" rx="1" fill="rgba(16,185,129,0.15)" />
-        <rect x="70" y="90" width="8" height="12" rx="1" fill="rgba(16,185,129,0.15)" />
-        <rect x="85" y="90" width="8" height="12" rx="1" fill="rgba(16,185,129,0.12)" />
-        <rect x="55" y="110" width="8" height="12" rx="1" fill="rgba(16,185,129,0.15)" />
-        <rect x="70" y="110" width="8" height="12" rx="1" fill="rgba(16,185,129,0.12)" />
-        <rect x="85" y="110" width="8" height="12" rx="1" fill="rgba(16,185,129,0.15)" />
-        <rect x="160" y="40" width="80" height="280" rx="2" fill="rgba(16,185,129,0.06)" />
-        <rect x="168" y="55" width="10" height="14" rx="1" fill="rgba(16,185,129,0.12)" />
-        <rect x="185" y="55" width="10" height="14" rx="1" fill="rgba(16,185,129,0.12)" />
-        <rect x="202" y="55" width="10" height="14" rx="1" fill="rgba(16,185,129,0.1)" />
-        <rect x="219" y="55" width="10" height="14" rx="1" fill="rgba(16,185,129,0.12)" />
-        <rect x="300" y="100" width="50" height="220" rx="2" fill="rgba(16,185,129,0.07)" />
-        <rect x="410" y="60" width="70" height="260" rx="2" fill="rgba(16,185,129,0.05)" />
-        <rect x="550" y="120" width="45" height="200" rx="2" fill="rgba(16,185,129,0.08)" />
-        <rect x="650" y="50" width="90" height="270" rx="2" fill="rgba(16,185,129,0.06)" />
-        <rect x="800" y="90" width="55" height="230" rx="2" fill="rgba(16,185,129,0.07)" />
-        <rect x="920" y="70" width="65" height="250" rx="2" fill="rgba(16,185,129,0.05)" />
-        <rect x="1050" y="110" width="50" height="210" rx="2" fill="rgba(16,185,129,0.08)" />
-        <rect x="1150" y="45" width="85" height="275" rx="2" fill="rgba(16,185,129,0.06)" />
-        <rect x="1300" y="85" width="60" height="235" rx="2" fill="rgba(16,185,129,0.07)" />
+      {/* DUBAI Skyline - Left Section (Green theme) */}
+      <svg className="city-layer" viewBox="0 0 1440 400" style={{ animation: 'buildingRise1 9s ease-in-out infinite', height: '50%' }}>
+        {/* City Label */}
+        <text className="city-label" x="200" y="80" fill="rgba(16,185,129,0.35)" textAnchor="middle">Dubai</text>
+        
+        {/* Burj Khalifa - Iconic spire */}
+        <polygon points="120,320 140,320 140,60 138,30 136,10 134,2 132,10 130,30 128,60 120,80" fill="rgba(16,185,129,0.1)" />
+        <line x1="130" y1="15" x2="130" y2="2" stroke="rgba(16,185,129,0.2)" strokeWidth="1" />
+        {/* Khalifa windows */}
+        <rect x="128" y="80" width="4" height="6" fill="rgba(16,185,129,0.2)" />
+        <rect x="128" y="95" width="4" height="6" fill="rgba(16,185,129,0.18)" />
+        <rect x="128" y="110" width="4" height="6" fill="rgba(16,185,129,0.2)" />
+        <rect x="128" y="130" width="4" height="6" fill="rgba(16,185,129,0.15)" />
+        <rect x="128" y="150" width="4" height="6" fill="rgba(16,185,129,0.2)" />
+        <rect x="128" y="170" width="4" height="6" fill="rgba(16,185,129,0.18)" />
+        <rect x="128" y="200" width="4" height="6" fill="rgba(16,185,129,0.15)" />
+        <rect x="128" y="230" width="4" height="6" fill="rgba(16,185,129,0.2)" />
+        <rect x="128" y="260" width="4" height="6" fill="rgba(16,185,129,0.18)" />
+        
+        {/* Burj Al Arab - Sail shape */}
+        <path d="M240,320 L240,140 Q240,100 260,80 Q280,100 280,140 L280,320 Z" fill="rgba(16,185,129,0.08)" />
+        <path d="M242,140 Q242,105 260,85 Q278,105 278,140" fill="none" stroke="rgba(16,185,129,0.15)" strokeWidth="1" />
+        <ellipse cx="260" cy="310" rx="30" ry="10" fill="rgba(16,185,129,0.05)" />
+        
+        {/* Dubai Frame */}
+        <rect x="330" y="100" width="8" height="220" fill="rgba(16,185,129,0.09)" />
+        <rect x="390" y="100" width="8" height="220" fill="rgba(16,185,129,0.09)" />
+        <rect x="330" y="95" width="68" height="12" rx="2" fill="rgba(16,185,129,0.1)" />
+        {/* Frame windows */}
+        <rect x="350" y="110" width="4" height="5" fill="rgba(16,185,129,0.15)" />
+        <rect x="360" y="110" width="4" height="5" fill="rgba(16,185,129,0.12)" />
+        <rect x="370" y="110" width="4" height="5" fill="rgba(16,185,129,0.15)" />
+        
+        {/* Cayan Tower (Twisted) */}
+        <polygon points="60,320 55,180 52,160 58,140 70,120 82,140 88,160 85,180 80,320" fill="rgba(16,185,129,0.07)" />
+        <line x1="62" y1="200" x2="78" y2="195" stroke="rgba(16,185,129,0.12)" strokeWidth="0.5" />
+        <line x1="60" y1="240" x2="80" y2="235" stroke="rgba(16,185,129,0.12)" strokeWidth="0.5" />
+        <line x1="58" y1="280" x2="82" y2="275" stroke="rgba(16,185,129,0.12)" strokeWidth="0.5" />
+        
+        {/* Marina Towers cluster */}
+        <rect x="420" y="130" width="25" height="190" rx="2" fill="rgba(16,185,129,0.06)" />
+        <rect x="450" y="100" width="20" height="220" rx="2" fill="rgba(16,185,129,0.07)" />
+        <rect x="475" y="150" width="22" height="170" rx="2" fill="rgba(16,185,129,0.05)" />
+        {/* Windows */}
+        <rect x="425" y="145" width="5" height="7" fill="rgba(16,185,129,0.14)" />
+        <rect x="435" y="145" width="5" height="7" fill="rgba(16,185,129,0.12)" />
+        <rect x="425" y="165" width="5" height="7" fill="rgba(16,185,129,0.14)" />
+        <rect x="435" y="165" width="5" height="7" fill="rgba(16,185,129,0.12)" />
       </svg>
 
-      {/* Building Layer 2 - Mid */}
-      <svg className="city-layer" viewBox="0 0 1440 320" style={{ animation: 'buildingRise2 12s ease-in-out infinite', height: '35%' }}>
-        <rect x="100" y="100" width="70" height="220" rx="2" fill="rgba(59,130,246,0.06)" />
-        <rect x="108" y="115" width="8" height="10" rx="1" fill="rgba(59,130,246,0.15)" />
-        <rect x="122" y="115" width="8" height="10" rx="1" fill="rgba(59,130,246,0.12)" />
-        <rect x="136" y="115" width="8" height="10" rx="1" fill="rgba(59,130,246,0.15)" />
-        <rect x="250" y="60" width="55" height="260" rx="2" fill="rgba(59,130,246,0.05)" />
-        <rect x="380" y="130" width="40" height="190" rx="2" fill="rgba(59,130,246,0.07)" />
-        <rect x="500" y="80" width="65" height="240" rx="2" fill="rgba(59,130,246,0.05)" />
-        <rect x="700" y="110" width="50" height="210" rx="2" fill="rgba(59,130,246,0.06)" />
-        <rect x="850" y="70" width="75" height="250" rx="2" fill="rgba(59,130,246,0.05)" />
-        <rect x="1000" y="90" width="60" height="230" rx="2" fill="rgba(59,130,246,0.07)" />
-        <rect x="1200" y="120" width="45" height="200" rx="2" fill="rgba(59,130,246,0.05)" />
-        <rect x="1350" y="60" width="70" height="260" rx="2" fill="rgba(59,130,246,0.06)" />
+      {/* ABU DHABI Skyline - Center Section (Blue theme) */}
+      <svg className="city-layer" viewBox="0 0 1440 400" style={{ animation: 'buildingRise2 13s ease-in-out infinite', height: '42%' }}>
+        {/* City Label */}
+        <text className="city-label" x="720" y="100" fill="rgba(59,130,246,0.35)" textAnchor="middle" style={{animationDelay: '3s'}}>Abu Dhabi</text>
+        
+        {/* Etihad Towers - 5 towers of different heights */}
+        <rect x="620" y="110" width="18" height="210" rx="8" fill="rgba(59,130,246,0.07)" />
+        <rect x="642" y="85" width="18" height="235" rx="8" fill="rgba(59,130,246,0.08)" />
+        <rect x="664" y="70" width="20" height="250" rx="10" fill="rgba(59,130,246,0.09)" />
+        <rect x="688" y="90" width="18" height="230" rx="8" fill="rgba(59,130,246,0.08)" />
+        <rect x="710" y="120" width="18" height="200" rx="8" fill="rgba(59,130,246,0.07)" />
+        {/* Tower windows */}
+        <rect x="668" y="90" width="6" height="8" fill="rgba(59,130,246,0.18)" />
+        <rect x="668" y="110" width="6" height="8" fill="rgba(59,130,246,0.15)" />
+        <rect x="668" y="130" width="6" height="8" fill="rgba(59,130,246,0.18)" />
+        <rect x="668" y="150" width="6" height="8" fill="rgba(59,130,246,0.15)" />
+        <rect x="668" y="170" width="6" height="8" fill="rgba(59,130,246,0.18)" />
+
+        {/* Capital Gate - Leaning tower */}
+        <polygon points="780,320 775,150 785,100 810,90 820,100 825,150 820,320" fill="rgba(59,130,246,0.07)" />
+        <line x1="790" y1="120" x2="815" y2="115" stroke="rgba(59,130,246,0.12)" strokeWidth="0.5" />
+        <line x1="788" y1="160" x2="818" y2="155" stroke="rgba(59,130,246,0.12)" strokeWidth="0.5" />
+        <line x1="785" y1="200" x2="820" y2="195" stroke="rgba(59,130,246,0.12)" strokeWidth="0.5" />
+        <line x1="783" y1="240" x2="822" y2="235" stroke="rgba(59,130,246,0.12)" strokeWidth="0.5" />
+        
+        {/* ADNOC HQ */}
+        <rect x="850" y="130" width="30" height="190" rx="2" fill="rgba(59,130,246,0.06)" />
+        <rect x="855" y="125" width="20" height="8" rx="2" fill="rgba(59,130,246,0.08)" />
+        <rect x="856" y="145" width="6" height="8" fill="rgba(59,130,246,0.14)" />
+        <rect x="868" y="145" width="6" height="8" fill="rgba(59,130,246,0.12)" />
+        <rect x="856" y="165" width="6" height="8" fill="rgba(59,130,246,0.14)" />
+        <rect x="868" y="165" width="6" height="8" fill="rgba(59,130,246,0.12)" />
+        
+        {/* Sheikh Zayed Mosque domes */}
+        <ellipse cx="570" cy="260" rx="25" ry="15" fill="rgba(59,130,246,0.06)" />
+        <ellipse cx="570" cy="256" rx="18" ry="20" fill="rgba(59,130,246,0.05)" />
+        <line x1="570" y1="236" x2="570" y2="225" stroke="rgba(59,130,246,0.12)" strokeWidth="1" />
+        <ellipse cx="545" cy="268" rx="12" ry="12" fill="rgba(59,130,246,0.05)" />
+        <ellipse cx="595" cy="268" rx="12" ry="12" fill="rgba(59,130,246,0.05)" />
+        <rect x="530" y="275" width="80" height="45" rx="2" fill="rgba(59,130,246,0.04)" />
+        {/* Minarets */}
+        <rect x="527" y="240" width="4" height="80" fill="rgba(59,130,246,0.06)" />
+        <rect x="609" y="240" width="4" height="80" fill="rgba(59,130,246,0.06)" />
       </svg>
 
-      {/* Building Layer 3 - Front */}
-      <svg className="city-layer" viewBox="0 0 1440 320" style={{ animation: 'buildingRise3 10s ease-in-out infinite 2s', height: '28%' }}>
-        <rect x="30" y="140" width="45" height="180" rx="2" fill="rgba(139,92,246,0.06)" />
-        <rect x="180" y="110" width="55" height="210" rx="2" fill="rgba(139,92,246,0.05)" />
-        <rect x="330" y="150" width="40" height="170" rx="2" fill="rgba(139,92,246,0.07)" />
-        <rect x="480" y="100" width="60" height="220" rx="2" fill="rgba(139,92,246,0.04)" />
-        <rect x="630" y="130" width="50" height="190" rx="2" fill="rgba(139,92,246,0.06)" />
-        <rect x="780" y="120" width="45" height="200" rx="2" fill="rgba(139,92,246,0.05)" />
-        <rect x="950" y="105" width="65" height="215" rx="2" fill="rgba(139,92,246,0.04)" />
-        <rect x="1100" y="140" width="50" height="180" rx="2" fill="rgba(139,92,246,0.06)" />
-        <rect x="1280" y="110" width="55" height="210" rx="2" fill="rgba(139,92,246,0.05)" />
+      {/* SHARJAH Skyline - Right Section (Purple theme) */}
+      <svg className="city-layer" viewBox="0 0 1440 400" style={{ animation: 'buildingRise3 11s ease-in-out infinite 1.5s', height: '38%' }}>
+        {/* City Label */}
+        <text className="city-label" x="1200" y="110" fill="rgba(139,92,246,0.35)" textAnchor="middle" style={{animationDelay: '6s'}}>Sharjah</text>
+        
+        {/* KOF Tower */}
+        <rect x="1100" y="120" width="22" height="200" rx="2" fill="rgba(139,92,246,0.07)" />
+        <polygon points="1100,120 1111,90 1122,120" fill="rgba(139,92,246,0.08)" />
+        <rect x="1105" y="135" width="5" height="7" fill="rgba(139,92,246,0.15)" />
+        <rect x="1112" y="135" width="5" height="7" fill="rgba(139,92,246,0.12)" />
+        <rect x="1105" y="155" width="5" height="7" fill="rgba(139,92,246,0.15)" />
+        <rect x="1112" y="155" width="5" height="7" fill="rgba(139,92,246,0.12)" />
+        
+        {/* Al Noor Mosque - Dome */}
+        <ellipse cx="1220" cy="250" rx="30" ry="20" fill="rgba(139,92,246,0.06)" />
+        <ellipse cx="1220" cy="245" rx="22" ry="25" fill="rgba(139,92,246,0.05)" />
+        <line x1="1220" y1="220" x2="1220" y2="208" stroke="rgba(139,92,246,0.15)" strokeWidth="1" />
+        <rect x="1195" y="265" width="50" height="55" rx="2" fill="rgba(139,92,246,0.04)" />
+        {/* Minarets */}
+        <rect x="1190" y="225" width="3" height="95" fill="rgba(139,92,246,0.06)" />
+        <rect x="1247" y="225" width="3" height="95" fill="rgba(139,92,246,0.06)" />
+        
+        {/* Sharjah clocktower area */}
+        <rect x="1320" y="170" width="15" height="150" fill="rgba(139,92,246,0.06)" />
+        <circle cx="1327" cy="165" r="10" fill="none" stroke="rgba(139,92,246,0.1)" strokeWidth="2" />
+        <circle cx="1327" cy="165" r="2" fill="rgba(139,92,246,0.15)" />
+        
+        {/* Al Majaz towers */}
+        <rect x="1050" y="160" width="18" height="160" rx="2" fill="rgba(139,92,246,0.05)" />
+        <rect x="1072" y="140" width="15" height="180" rx="2" fill="rgba(139,92,246,0.06)" />
+        <rect x="1380" y="180" width="20" height="140" rx="2" fill="rgba(139,92,246,0.05)" />
+        <rect x="1405" y="150" width="18" height="170" rx="2" fill="rgba(139,92,246,0.06)" />
       </svg>
 
-      {/* Floating particles */}
-      {[...Array(12)].map((_, i) => (
+      {/* Floating particles — city lights rising */}
+      {[...Array(15)].map((_, i) => (
         <div key={i} className="particle" style={{
-          left: `${8 + i * 8}%`,
-          animationDuration: `${6 + (i % 5) * 3}s`,
-          animationDelay: `${i * 0.8}s`,
+          left: `${5 + i * 6.2}%`,
+          animationDuration: `${5 + (i % 6) * 2.5}s`,
+          animationDelay: `${i * 0.6}s`,
           width: `${2 + (i % 3)}px`,
           height: `${2 + (i % 3)}px`,
-          background: i % 3 === 0 ? 'rgba(16,185,129,0.5)' : i % 3 === 1 ? 'rgba(59,130,246,0.4)' : 'rgba(139,92,246,0.4)'
+          background: i < 5 ? 'rgba(16,185,129,0.5)' : i < 10 ? 'rgba(59,130,246,0.4)' : 'rgba(139,92,246,0.45)'
         }} />
       ))}
 
-      {/* Ground line */}
+      {/* Ground reflection line */}
       <div style={{
         position: 'absolute',
         bottom: 0, left: 0, right: 0,
         height: '2px',
-        background: 'linear-gradient(90deg, transparent, rgba(16,185,129,0.3), rgba(59,130,246,0.2), rgba(139,92,246,0.2), transparent)',
+        background: 'linear-gradient(90deg, transparent 5%, rgba(16,185,129,0.4) 25%, rgba(59,130,246,0.3) 50%, rgba(139,92,246,0.3) 75%, transparent 95%)',
+        pointerEvents: 'none'
+      }} />
+      {/* Ground gradient */}
+      <div style={{
+        position: 'absolute',
+        bottom: 0, left: 0, right: 0,
+        height: '40px',
+        background: 'linear-gradient(180deg, transparent, rgba(0,0,0,0.3))',
         pointerEvents: 'none'
       }} />
 
