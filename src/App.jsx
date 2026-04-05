@@ -38,6 +38,7 @@ function App() {
             path="/panel" 
             element={isAuthenticated && userRole === 'Main Editor' ? <ControlPanel lang={lang} setLang={setLang} onLogout={handleLogout} /> : <Navigate to="/dashboard" />} 
           />
+          <Route path="/portal" element={<Navigate to="/panel" />} />
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>
       </div>
