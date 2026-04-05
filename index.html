@@ -4,10 +4,112 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>broker-app</title>
+    <meta name="description" content="Broker App - Professional Real Estate Management Platform" />
+    <title>Broker App - Real Estate Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+      /* Loading screen - shown while React loads */
+      #app-loader {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #0a0f1c 0%, #0d1b2a 50%, #0a0f1c 100%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        font-family: 'Inter', sans-serif;
+        transition: opacity 0.5s ease;
+      }
+      #app-loader.hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      .loader-logo {
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #10b981, #059669);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 24px;
+        animation: pulse 2s ease-in-out infinite;
+        box-shadow: 0 0 40px rgba(16, 185, 129, 0.3);
+      }
+      .loader-logo svg {
+        width: 36px;
+        height: 36px;
+        color: white;
+      }
+      .loader-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin-bottom: 8px;
+      }
+      .loader-subtitle {
+        color: rgba(148, 163, 184, 0.8);
+        font-size: 0.9rem;
+        margin-bottom: 32px;
+      }
+      .loader-bar {
+        width: 200px;
+        height: 3px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .loader-bar-fill {
+        width: 40%;
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #34d399);
+        border-radius: 4px;
+        animation: loading 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      @keyframes loading {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(350%); }
+      }
+    </style>
   </head>
   <body>
+    <!-- Branded loading screen -->
+    <div id="app-loader">
+      <div class="loader-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <div class="loader-title">Broker App</div>
+      <div class="loader-subtitle">Loading your real estate dashboard...</div>
+      <div class="loader-bar">
+        <div class="loader-bar-fill"></div>
+      </div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      // Hide loader once React mounts
+      const observer = new MutationObserver(() => {
+        const root = document.getElementById('root');
+        if (root && root.children.length > 0) {
+          const loader = document.getElementById('app-loader');
+          if (loader) {
+            loader.classList.add('hide');
+            setTimeout(() => loader.remove(), 500);
+          }
+          observer.disconnect();
+        }
+      });
+      observer.observe(document.getElementById('root'), { childList: true });
+    </script>
   </body>
 </html>

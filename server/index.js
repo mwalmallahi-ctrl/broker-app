@@ -190,4 +190,15 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log('Broker API running on port ' + PORT));
+app.listen(PORT, () => {
+  console.log('Broker API running on port ' + PORT);
+  
+  // Keep-alive: ping self every 13 minutes to prevent Render free tier sleep
+  setInterval(() => {
+    const http = require('http');
+    const url = `http://localhost:${PORT}/api/health`;
+    http.get(url, (res) => {
+      console.log(`[Keep-Alive] Ping OK - ${new Date().toLocaleTimeString()}`);
+    }).on('error', () => {});
+  }, 13 * 60 * 1000); // Every 13 minutes
+});
