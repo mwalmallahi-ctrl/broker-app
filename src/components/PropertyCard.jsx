@@ -19,7 +19,7 @@ const PropertyCard = ({ property, onShare, onToggle, onDelete, onView, userRole,
         marginBottom: '1rem'
       }}>
         <img 
-          src={photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} 
+          src={(property.photos && property.photos.length > 0) ? property.photos[0] : (photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')} 
           alt={name} 
           style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />

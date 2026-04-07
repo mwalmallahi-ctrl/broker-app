@@ -6,7 +6,8 @@ import {
   Search, Plus, Filter, LayoutGrid, List, Shield, X, MapPin, 
   Building, Square, Phone, Store, Home, Key, Tag, 
   Image as LucideImage, Share, UserPlus, Upload, Trash2, Send, Coins,
-  Globe, Lock, Eye, EyeOff, UserCheck, Languages, LogOut, ArrowLeft
+  Globe, Lock, Eye, EyeOff, UserCheck, Languages, LogOut, ArrowLeft,
+  ChevronLeft, ChevronRight, Camera
 } from 'lucide-react';
 
 const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLang, onLogout }) => {
@@ -15,6 +16,7 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
   const [showAddModal, setShowAddModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(null); // stores the property to share
   const [viewProperty, setViewProperty] = useState(null); // stores the property to view details
+  const [activePhotoIdx, setActivePhotoIdx] = useState(0); 
   const [shareEmail, setShareEmail] = useState('');
   
   // Real Local State for Properties
@@ -163,74 +165,160 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
     (prop.purpose?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
+  // Utility for availability color
+  const availabilityColor = (status) => status === 'Available' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)';
+  const availabilityTextColor = (status) => status === 'Available' ? 'var(--primary)' : '#ef4444';
+
   return (
     <div style={{ padding: '2rem 1.5rem', maxWidth: '1400px', margin: '0 auto' }}>
       
-      {/* View Property Full Page */}
+      {/* View Property Full Page (Portal Mode) */}
       {viewProperty ? (
-        <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', padding: '2rem' }}>
-          <button 
-            className="btn-glass" 
-            onClick={() => setViewProperty(null)}
-            style={{ padding: '10px 16px', cursor: 'pointer', border: '1px solid var(--border-glass)', marginBottom: '1.5rem', display: 'flex', gap: '8px', alignItems: 'center' }}
-          >
-            <ArrowLeft size={18} style={{ transform: lang === 'ar' ? 'rotate(180deg)' : 'none' }} /> 
-            {lang === 'en' ? 'Back to Dashboard' : 'العودة للوحة القيادة'}
-          </button>
-
-          <h2 style={{ fontSize: '2rem', fontWeight: '800', marginBottom: '1.5rem' }}>{viewProperty.name}</h2>
+        <div className="glass-card" style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem', background: 'var(--bg-main)', border: 'none' }}>
           
-          <div style={{ width: '100%', height: '400px', borderRadius: '16px', overflow: 'hidden', marginBottom: '2rem', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
-            <img src={viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} alt={viewProperty.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', color: 'white', backgroundColor: 'rgba(0,0,0,0.2)', padding: '2rem', borderRadius: '12px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.type || 'Type'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.type} ({viewProperty.use})</strong></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.price || 'Price'}</span> <strong style={{ fontSize: '1.1rem', color: 'var(--primary)' }}>{viewProperty.price} {viewProperty.purpose === 'Rent' ? (lang === 'en' ? 'AED/Yr' : 'درهم/سنوي') : (lang === 'en' ? 'AED' : 'درهم')}</strong></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.location || 'Location'}</span> <a href={viewProperty.mapLink} target="_blank" rel="noreferrer" style={{color: 'var(--primary)', fontWeight: 'bold'}}>{viewProperty.location}</a></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.area || 'Area'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.area} {t.sqft}</strong></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.unitType || 'Unit'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.unitType}</strong></div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.availability || 'Availability'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.availability}</strong></div>
-            {viewProperty.ownerName && <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.ownerName || 'Owner'}</span> <strong style={{ fontSize: '1.1rem' }}>{viewProperty.ownerName}</strong></div>}
-            {viewProperty.sourcePhone && <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}><span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{t.phone || 'Phone'}</span> <a href={`tel:${viewProperty.sourcePhone}`} style={{color: 'inherit', fontWeight: 'bold', fontSize: '1.1rem'}}>{viewProperty.sourcePhone}</a></div>}
-          </div>
-
-          <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: '10px' }}>
-            {viewProperty.photos && viewProperty.photos.length > 0 ? (
-              viewProperty.photos.map((photo, idx) => (
-                <div key={idx} style={{ width: '100%', height: '100px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                  <img src={photo} alt={`${viewProperty.name} ${idx+1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              ))
-            ) : (
-               <div style={{ width: '100%', height: '100px', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }}>
-                  <img src={viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80'} alt="Default" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-               </div>
-            )}
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem', marginTop: '2.5rem' }}>
-            <a 
-              href={`https://wa.me/?text=${encodeURIComponent(`Check out this property:\n\n*Name:* ${viewProperty.name}\n*Type:* ${viewProperty.type} - ${viewProperty.use}\n*Price:* ${viewProperty.price} AED\n*Location:* ${viewProperty.location}\n*Area:* ${viewProperty.area} SQFT\n*Map Link:* ${viewProperty.mapLink}`)}`} 
-              target="_blank" 
-              rel="noreferrer"
-              className="btn-primary" 
-              style={{ flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', background: '#25D366', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px' }}
-            >
-              <Send size={20} /> {lang === 'en' ? 'Share Profile via WhatsApp' : 'شارك الملف عبر واتساب'}
-            </a>
-            
+          {/* Header Actions */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
             <button 
-              onClick={() => { handleDeleteProperty(viewProperty._id || viewProperty.id); setViewProperty(null); }}
-              style={{ 
-                flex: 1, padding: '1rem', textAlign: 'center', textDecoration: 'none', 
-                background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', border: '1px solid rgba(239, 68, 68, 0.3)',
-                borderRadius: '8px', fontSize: '1.1rem', fontWeight: 'bold', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px',
-                cursor: 'pointer'
-              }}
+              className="btn-secondary" 
+              onClick={() => setViewProperty(null)}
+              style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-glass)', borderRadius: '8px', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
             >
-              <Trash2 size={20} /> {lang === 'en' ? 'Delete Property' : 'حذف العقار'}
+              <ArrowLeft size={18} style={{ transform: lang === 'ar' ? 'rotate(180deg)' : 'none' }} /> 
+              {lang === 'en' ? 'Back' : 'رجوع'}
             </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button style={{ padding: '8px 16px', background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.2)', borderRadius: '8px', color: '#60a5fa', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <Eye size={18} /> {lang === 'en' ? 'Save' : 'حفظ'}
+              </button>
+              <button style={{ padding: '8px 16px', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.2)', borderRadius: '8px', color: 'var(--primary)', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                <Share size={18} /> {lang === 'en' ? 'Share' : 'مشاركة'}
+              </button>
+            </div>
+          </div>
+
+          <div className="mosaic-gallery" dir="ltr">
+            <div className="mosaic-main">
+              <img 
+                src={(viewProperty.photos && viewProperty.photos.length > 0) ? viewProperty.photos[0] : (viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')} 
+                alt={viewProperty.name} 
+              />
+              <button className="image-overlay-btn btn-overlay-map">
+                <MapPin size={16} /> {lang === 'en' ? 'Map' : 'الخريطة'}
+              </button>
+              <button className="image-overlay-btn btn-overlay-video">
+                {lang === 'en' ? 'Request video' : 'طلب فيديو'}
+              </button>
+            </div>
+            <div className="mosaic-side">
+              <div className="mosaic-side-item">
+                <img src={(viewProperty.photos && viewProperty.photos.length > 1) ? viewProperty.photos[1] : (viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')} alt="Side 1" />
+              </div>
+              <div className="mosaic-side-item">
+                <img src={(viewProperty.photos && viewProperty.photos.length > 2) ? viewProperty.photos[2] : (viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')} alt="Side 2" />
+              </div>
+              <div className="mosaic-side-item">
+                <img src={(viewProperty.photos && viewProperty.photos.length > 3) ? viewProperty.photos[3] : (viewProperty.photoUrl || 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80')} alt="Side 3" />
+                <div className="photo-count-badge">
+                   <Camera size={16} /> {viewProperty.photos ? viewProperty.photos.length : 1}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="detail-layout" dir={lang === 'ar' ? 'rtl' : 'ltr'}>
+            <div className="detail-main">
+              <div style={{ marginBottom: '2rem' }}>
+                <h2 style={{ fontSize: '2.5rem', fontWeight: '800', color: 'white', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '1.2rem', color: 'var(--text-muted)', verticalAlign: 'middle', marginRight: '8px' }}>AED</span>
+                  {viewProperty.price}
+                  <span style={{ fontSize: '1rem', color: 'var(--text-muted)', fontWeight: '400', marginLeft: '8px' }}>
+                    {viewProperty.purpose === 'Rent' ? (lang === 'en' ? 'Yearly' : 'سنوي') : ''}
+                  </span>
+                </h2>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', marginBottom: '1rem' }}>
+                  <MapPin size={18} />
+                  <span style={{ fontSize: '1.1rem' }}>{viewProperty.location}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '20px', padding: '1rem 0', borderTop: '1px solid var(--border-glass)', borderBottom: '1px solid var(--border-glass)' }}>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Square size={20} color="var(--primary)" />
+                      <strong style={{ fontSize: '1.1rem' }}>{viewProperty.area} {t.sqft}</strong>
+                   </div>
+                   <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <Building size={20} color="var(--primary)" />
+                      <strong style={{ fontSize: '1.1rem' }}>{viewProperty.unitType}</strong>
+                   </div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '2rem' }}>
+                <h1 style={{ fontSize: '1.5rem', fontWeight: '700', lineHeight: '1.4', marginBottom: '1.5rem', color: '#fff' }}>
+                  {viewProperty.name} - {viewProperty.unitType} {lang === 'en' ? 'Excellent Condition in' : 'حالة ممتازة في'} {viewProperty.location}
+                </h1>
+                
+                <div style={{ background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '16px', border: '1px solid var(--border-glass)' }}>
+                   <h3 style={{ marginBottom: '1rem', color: 'var(--primary)' }}>{lang === 'en' ? 'Property Details' : 'تفاصيل العقار'}</h3>
+                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                      <p><strong>{lang === 'en' ? 'Type' : 'النوع'}:</strong> {viewProperty.type}</p>
+                      <p><strong>{lang === 'en' ? 'Purpose' : 'الغرض'}:</strong> {viewProperty.purpose}</p>
+                      <p><strong>{lang === 'en' ? 'Status' : 'الحالة'}:</strong> {viewProperty.availability}</p>
+                      <p><strong>{lang === 'en' ? 'Listing ID' : 'معرف القائمة'}:</strong> #{viewProperty._id ? viewProperty._id.substring(18) : '0000'}</p>
+                   </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                 <button 
+                   onClick={() => { handleDeleteProperty(viewProperty._id || viewProperty.id); setViewProperty(null); }}
+                   style={{ 
+                     padding: '12px 24px', background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444', 
+                     border: '1px solid rgba(239, 68, 68, 0.3)', borderRadius: '8px', cursor: 'pointer',
+                     display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold'
+                   }}
+                 >
+                   <Trash2 size={18} /> {lang === 'en' ? 'Delete Property' : 'حذف العقار'}
+                 </button>
+              </div>
+            </div>
+
+            <div className="detail-sidebar">
+              <div className="agent-card">
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '1.5rem', textAlign: 'center' }}>
+                  <div style={{ width: '80px', height: '80px', background: '#f8fafc', borderRadius: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '12px', border: '1px solid #e2e8f0' }}>
+                    <img src="/logo.png" alt="Company Logo" style={{ width: '50px' }} />
+                  </div>
+                  <p style={{ fontSize: '0.85rem', color: '#64748b', marginBottom: '4px' }}>Agent: <strong>{userName}</strong></p>
+                  <p style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{userRole}</p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <button className="agent-contact-btn contact-email">
+                    <Send size={18} /> {lang === 'en' ? 'Email' : 'بريد إلكتروني'}
+                  </button>
+                  <a href={`tel:${viewProperty.sourcePhone}`} style={{ textDecoration: 'none' }}>
+                    <button className="agent-contact-btn contact-call">
+                      <Phone size={18} /> {lang === 'en' ? 'Call' : 'اتصل'}
+                    </button>
+                  </a>
+                  <a 
+                    href={`https://wa.me/${viewProperty.sourcePhone.replace(/\s+/g, '')}?text=${encodeURIComponent(`Interest in ${viewProperty.name}`)}`} 
+                    target="_blank" 
+                    rel="noreferrer"
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <button className="agent-contact-btn contact-wa">
+                      <Send size={18} /> WhatsApp
+                    </button>
+                  </a>
+                </div>
+
+                <div style={{ marginTop: '1.5rem', paddingTop: '1rem', borderTop: '1px solid #f1f5f9', textAlign: 'center' }}>
+                   <a href="#" style={{ fontSize: '0.85rem', color: '#0369a1', fontWeight: '600', textDecoration: 'none' }}>
+                     {lang === 'en' ? 'View all agency properties >' : 'عرض جميع عقارات الوكالة >'}
+                   </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       ) : (
@@ -372,7 +460,11 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
             onShare={setShowShareModal} 
             onToggle={() => togglePrivacy(prop._id || prop.id)}
             onDelete={() => handleDeleteProperty(prop._id || prop.id)}
-            onView={() => { setViewProperty(prop); window.scrollTo(0, 0); }}
+            onView={() => { 
+                setViewProperty(prop); 
+                setActivePhotoIdx(0);
+                window.scrollTo(0, 0); 
+            }}
           />
         ))}
       </div>
@@ -394,7 +486,7 @@ const Dashboard = ({ userName = "Broker", userRole = "Main Editor", lang, setLan
           <div className="glass-card" style={{ maxWidth: '600px', width: '100%', padding: '2rem', position: 'relative', maxHeight: '90vh', overflowY: 'auto' }}>
             <button 
               onClick={() => setShowAddModal(false)}
-              style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
+              style={{ position: 'absolute', top: '1.5rem', right: '1.1rem', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}
             >
               <X size={24} />
             </button>

@@ -46,6 +46,7 @@ const PropertySchema = new mongoose.Schema({
   purpose: String,
   price: String,
   ownerName: String,
+  photos: [String],
   isShareable: { type: Boolean, default: true }
 });
 
@@ -72,6 +73,12 @@ const demoProperties = [
     lastUpdated: new Date(),
     sourcePhone: '+971 50 123 4567',
     photoUrl: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
+    photos: [
+      'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1574362848149-11496d93a7c7?auto=format&fit=crop&q=80'
+    ],
     mapLink: 'https://www.google.com/maps/place/Dubai+Marina',
     use: 'Residential',
     purpose: 'Rent',
