@@ -110,8 +110,8 @@ body {
 .mosaic-gallery {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
-  gap: 12px;
-  height: 600px;
+  gap: 10px;
+  height: 500px;
   margin-bottom: 2.5rem;
 }
 
